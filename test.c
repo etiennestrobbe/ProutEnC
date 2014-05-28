@@ -4,8 +4,10 @@
 
 int main(){
 	int c;
-	while((c=getchar()!=EOF)){
-		write(1,(char *)c, 1);
-	}
-	return 0;
+  puts ("Enter text. Include a dot ('.') in a sentence to exit:");
+  do {
+    c=getchar();
+    putchar (c);
+  } while (c != '.');
+  return 0;
 }
