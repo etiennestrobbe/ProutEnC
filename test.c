@@ -4,10 +4,12 @@
 
 int main(){
 	int c;
-  puts ("Enter text. Include a dot ('.') in a sentence to exit:");
-  do {
-    c=getchar();
-    putchar (c);
-  } while (c != '.');
-  return 0;
+	while((c=getchar()!=EOF)){
+	while(1){
+		write(1,&c,1);
+	}
+}
+return 0;
+
+
 }
