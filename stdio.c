@@ -1,11 +1,13 @@
 #include "stdio.h"
 
-int main(){
-int c;
-  puts ("Enter text. Include a dot ('.') in a sentence to exit:");
-  do {
-    c=getchar();
-    putchar (c);
-  } while (c != '.');
-  return 0;
-  }
+int _filbuf(FILE *f)
+{
+	// controle 
+	//- allouer eventuellement un buffer
+	//- verifier que f est en lecture
+	int n;
+	n=read(f->_file, &c, 1);
+	f->_cnt=0; // pour garantir que le prochain getC qu'on va faire, X
+	
+	return(n)?c:EOF
+}
