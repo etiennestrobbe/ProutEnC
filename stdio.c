@@ -39,11 +39,28 @@ int _filbuf(FILE *f){
 
 int _flsbuf(unsigned char c, FILE *f){
 
-	if(c)
-	write(1,&c,1);
-	free(f->_base);
-	f->_base = NULL;
-	f->_ptr = f->_base;
-	f->_cnt = 0;
-	return 0;
+	int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
+
+	// Si le buffer n'existe pas
+	if(f->_bufsiz <=1){
+		f->_base = malloc(size);
+		f->_ptr = f->_base;
+		f->_cnt = size;
+	}
+
+	// Si le buffer est plein
+	if(f->_ptr >= f->_base + size){
+		write(f->_file, (char *) f->_base, size);
+		f->_ptr = f->_base;
+		f->_cnt = size;
+	}
+
+	// Si on est en ecriture
+	if (f->_flag & _IOWRT || f->_flag & _IORW) {
+		*(f->_ptr)++ = c;
+		f->_cnt--;
+	}
+
+	// D'autres cas ?
+
 }
