@@ -1,5 +1,11 @@
 #include "stdio.h"
+#include <unistd.h>
+#include <stdlib.h>
 
+extern unsigned char (*_smbuf)[_SBFSIZ];
+
+void	_findbuf(FILE *);
+void	_bufsync(FILE *);
 int _filbuf(FILE *f){
 
 	// Verifier f lecture
@@ -9,7 +15,7 @@ int _filbuf(FILE *f){
 	// Si le buffer n'est pas fait
 	if (f->_base == NULL)
 	   // Si on ne peut plus allouer
-	   if ((f->_base = (char *) malloc(bufsize)) == NULL)
+	   if ((f->_base = (char *) malloc(size)) == NULL)
 		   return EOF;
 
 	// On initialise ptr
@@ -17,17 +23,19 @@ int _filbuf(FILE *f){
 
 	// On lit sur le fichier et on enregistre le nombre de caracteres
 	f->_cnt = read(f->_file, f->_ptr, size);
-	if (--f->_cnt < 0) {
-	   if (f->_cnt == -1)
-		   f->_flag |= _IOEOF;
-	   else
-		   f->_flag |= _IOERR;
-	   f->_cnt = 0;
-	   return EOF;
+	
+	/* si le compteur vaut 0 alors on est en EOF */
+	if ((f)->_cnt == 0) {
+		f->_flag |= _IOEOF;
+		return EOF;
+	}
+	else if((f)->_cnt == 0){
+		f->_flag |= _IOERR;
+		f->_cnt = 0;
+		return EOF;
 	}
 	return (unsigned char) *f->_ptr++;
 }
 
-int _flsbuf(unsigned char c, FILE *f){
-	return 0;
-}
+
+
