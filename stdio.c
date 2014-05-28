@@ -29,5 +29,9 @@ int _filbuf(FILE *f){
 }
 
 int _flsbuf(unsigned char c, FILE *f){
+
+	f->_ptr = f->_base;
+	free(f->base);
+	f->_cnt = 0;
 	return 0;
 }
