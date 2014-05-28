@@ -37,5 +37,13 @@ int _filbuf(FILE *f){
 	return (unsigned char) *f->_ptr++;
 }
 
+int _flsbuf(unsigned char c, FILE *f){
 
-
+	if(c)
+	write(1,&c,1);
+	free(f->_base);
+	f->_base = NULL;
+	f->_ptr = f->_base;
+	f->_cnt = 0;
+	return 0;
+}
