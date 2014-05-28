@@ -7,8 +7,6 @@ int _filbuf(FILE *f){
 	int n,c;
 	n=read(f->_file,&c,1);
 	f->_cnt=0; // pour garantir que le prochain getC qu'on va faire, on rapellera bien fillbuf
-if(c=='a'){puts("kiki");}
-if(n){puts("n");}
 	return(n)?c:EOF;
 }
 
