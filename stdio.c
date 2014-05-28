@@ -11,3 +11,7 @@ int _filbuf(FILE *f)
 	
 	return(n)?c:EOF;
 }
+
+int _flsbuf(unsigned char c, FILE *f){
+	return 0;
+}
