@@ -63,4 +63,5 @@ int _flsbuf(unsigned char c, FILE *f){
 
 	// D'autres cas ?
 
+	return c;
 }
