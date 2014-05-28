@@ -49,15 +49,22 @@ int _flsbuf(unsigned char c, FILE *f){
 	}
 
 	// Si le buffer est plein
-	if(f->_ptr >= f->_base + size){
-		write(f->_file, (char *) f->_base, size);
+	if(f->_ptr == f->_base + size){
+		puts("BUFFER PLEIN J'ECRIS DANS FICHIER");
+		int r = write(f->_file, (char *) f->_base, size);
+		if(r){
+			puts("R !");
+		}
+		else
+		{
+			puts("PAS R !");
+		}
 		f->_ptr = f->_base;
 		f->_cnt = size;
-	}else{
-		puts("KIKOU");
-		*(f->_ptr)++ = c;
-		f->_cnt--;
 	}
+	puts("J'ECRIS DANS BUFFER BITE");
+	*(f->_ptr)++ = c;
+	f->_cnt--;
 
 	// D'autres cas ?
 
