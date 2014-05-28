@@ -1,0 +1,77 @@
+FILE * est en fait un pointeur sur l'objet struct _iobuf
+Cette structure contient 6 champs
+cmt : compteur sur des character
+ptr : pointeur sur des character
+base : pointeur début du tableau à lire
+bufsize : taille du buffer
+flag : droits
+char file : file descriptor
+
+getc(f) // renvoi le caractere et a mis en mémoire les suivants pour limiter les acces disques
+
+Il existe donc un tableau
+struc _iobuf | => stdin 
+	     | => stdout
+	     | => stderr
+
+
+// rempli un buffer de 1 character
+int filbug(FILE *f) {
+	int c;
+	read(f->file, &c, 1);
+	// si n != 0 return c sinon EOF
+	return n? c: EOF;
+}
+
+// qui alloue le buffer ? 
+
+setbuf : en fait quand tu fais entrée sortie, tu passe par mon system
+setunbuf
+
+si base = null, pas de buffer alloué donc on en alloue un
+Peu se faire dans filbuf
+
+Un buffer peut avoir 2 modes de bufferisation en sortie :
+- LBF : bufferisé par ligne (avec le "\n")
+- NBF : pas de bufferisation comme le fichier stderr
+- FBF : bufferisation totale (full) : on vide le buffer quand il est plein
+Donc pb qu'on a veut écrire un caractere, il faut savoir dans quel mode on est, pour savoir qd on peut écrire
+
+
+buffer alloue lors de la premiere lecture et ecriture
+
+il faut désaouller un buffer que si c'est nous qui l'avons alloué.
+
+Pour la semaine prochaine : avoir le filbuf, le flushbuf, un makefile, et un bot de pgrm qui permette de tester
+while((c=getchar()!=EPF)
+	while(1,&c,1)
+
+//
+int _filbuf(File* f) {
+	// controle 
+	- allouer eventuellement un buffer
+	- verifier que f est en lecture
+	n=read(f->_file, &c, 1);
+	f->cnt=0; // pour garantir que le prochain getC qu'on va faire, X
+	
+	return(n)?c:EOF
+}
+
+// SI on a un pb de compilation avec IOB :
+// dans le pgramme main.c il faut faire 
+#define MAX 50
+struct_iobuf IOB[MAX] {
+// vérifier l'ordre en regardant les champs !!
+{0, NULL, NULL, IOREAD, 0 // fd}
+{0, NULL, NULL, IOREAD, 1 }
+{0, NULL, NULL, IOREAD, 2 } 
+// qd on va ouvrir les fichiers avec fopen, on ira toucher aux cases d'ici
+}
+
+// ou mettre le code qui va faire l'init ? et qui va le faire ?
+
+dans fopen y a un open :
+n=open(..., read si l'utilisateur a mis r,...)
+si n = 5 mettra 5 dans le fd de la struct d'au dessus
+
+
