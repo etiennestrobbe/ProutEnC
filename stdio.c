@@ -53,10 +53,8 @@ int _flsbuf(unsigned char c, FILE *f){
 		write(f->_file, (char *) f->_base, size);
 		f->_ptr = f->_base;
 		f->_cnt = size;
-	}
-
-	// Si on est en ecriture
-	if (f->_flag & _IOWRT || f->_flag & _IORW) {
+	}else{
+		puts("KIKOU");
 		*(f->_ptr)++ = c;
 		f->_cnt--;
 	}

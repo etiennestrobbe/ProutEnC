@@ -13,7 +13,7 @@
       (legerement modifie) ****/
 
 # ifndef FILE
-#define	BUFSIZ	1024
+#define	BUFSIZ	4
 #define _SBFSIZ	8
 struct	_iobuf {
 	int		_cnt;
