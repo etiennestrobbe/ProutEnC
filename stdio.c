@@ -1,22 +1,22 @@
 #include "stdio.h"
 
 int _filbuf(FILE *f){
-	/*// controle 
-	//- allouer eventuellement un buffer
-	//- verifier que f est en lecture
-	int n,c;
-	n=read(f->_file,&c,1);
-	f->_cnt=0; // pour garantir que le prochain getC qu'on va faire, on rapellera bien fillbuf
-	return(n)?c:EOF;/*/
-	int bufsize;
- 
-	bufsize = (f->_flag & _IONBF) ? 1 : BUFSIZ;
-	if (f->_base == NULL)     // no buffer yet
+
+	// Verifier f lecture
+
+	// Mettre en place le buffer si bufferisation
+	int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
+	// Si le buffer n'est pas fait
+	if (f->_base == NULL)
+	   // Si on ne peut plus allouer
 	   if ((f->_base = (char *) malloc(bufsize)) == NULL)
-		   return EOF;       // can't get buffer
+		   return EOF;
+
+	// On initialise ptr
 	f->_ptr = f->_base;
- 
-	f->_cnt = read(f->_file, f->_ptr, bufsize);
+
+	// On lit sur le fichier et on enregistre le nombre de caracteres
+	f->_cnt = read(f->_file, f->_ptr, size);
 	if (--f->_cnt < 0) {
 	   if (f->_cnt == -1)
 		   f->_flag |= _IOEOF;
