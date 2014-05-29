@@ -13,9 +13,9 @@
       (legerement modifie) ****/
 
 # ifndef FILE
-#define	BUFSIZ	4
+#define	BUFSIZ	1024
 #define _SBFSIZ	8
-struct	_iobuf {
+extern struct	_iobuf {
 	int		_cnt;
 	unsigned char*  _ptr;
 	unsigned char*  _base;

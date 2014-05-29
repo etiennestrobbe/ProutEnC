@@ -2,80 +2,53 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-extern unsigned char (*_smbuf)[_SBFSIZ];
 
-void	_findbuf(FILE *);
-void	_bufsync(FILE *);
 int _filbuf(FILE *f){
 
 	// Verifier f lecture
-
-	// Mettre en place le buffer si bufferisation
-	int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
-	// Si le buffer n'est pas fait
-	if (f->_base == NULL)
-	   // Si on ne peut plus allouer
-	   if ((f->_base = (char *) malloc(size)) == NULL)
-		   return EOF;
-
-	// On initialise ptr
-	f->_ptr = f->_base;
-
-	// On lit sur le fichier et on enregistre le nombre de caracteres
-	f->_cnt = read(f->_file, f->_ptr, size);
-	
-	/* si le compteur vaut 0 alors on est en EOF */
-	if ((f)->_cnt == 0) {
-		f->_flag |= _IOEOF;
+	if(!f->_flag & _IOREAD){
+		puts("file not in read mode");
 		return EOF;
 	}
-	else if((f)->_cnt == 0){
-		f->_flag |= _IOERR;
-		f->_cnt = 0;
-		return EOF;
+	else{
+		
+		// Mettre en place le buffer si bufferisation
+		int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
+		f->_bufsiz = size;
+		// Si le buffer n'est pas fait
+		if (f->_base == NULL){
+		   // Si on ne peut plus allouer
+		   if ((f->_base = (char *) malloc(size)) == NULL){
+			   return EOF;
+		   }
+		   else{
+			   // TODO mettre les bons drapeaux
+			   f->_flag |= _IOMYBUF;
+		   }
+		}
+
+		// On initialise ptr
+		f->_ptr = f->_base;
+
+		// On lit sur le fichier et on enregistre le nombre de caracteres
+		f->_cnt = read(f->_file, f->_ptr, size);
+		
+		/* si le compteur vaut 0 alors on est en EOF */
+		if ((f)->_cnt == 0) {
+			f->_flag |= _IOEOF;
+			return EOF;
+		}
+		else if((f)->_cnt == 0){
+			f->_flag |= _IOERR;
+			f->_cnt = 0;
+			return EOF;
+		}
+		return (unsigned char) *f->_ptr++;
 	}
-	return (unsigned char) *f->_ptr++;
 }
 
 int _flsbuf(unsigned char c, FILE *f){
-
-	/* si le buffer n'est pas en mode bufferisation alors taille = 1 */
-	int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
-
-	/* Si le buffer n'existe pas alors on le creer et l'alloue */
-	if(f->_base == NULL){
-		puts("buffer n'existe pas");
-		if((f->_base = malloc(size)) == NULL){
-			puts("ca merde");
-			return EOF;
-		}
-		else{
-			f->_ptr = f->_base;
-			f->_cnt = size;
-		}
-	}
-
-	/* Si le buffer est plein alors j'écris dans fichier */
-	if(f->_ptr == f->_base + size){
-		puts("BUFFER PLEIN J'ECRIS DANS FICHIER");
-		int written = write(f->_file, (char *) f->_base, size);
-		if(written){
-			puts("write ok !");
-		}
-		else
-		{
-			puts("write pas ok !");
-		}
-		f->_ptr = f->_base;
-		f->_cnt = size;
-	}
-	//puts("J'ECRIS DANS BUFFER BITE");
-	*(f->_ptr)++ = c;
-	f->_cnt--;
-
-	// D'autres cas ?
-
-	return c;
+	return 0;
 }
 
 /*
@@ -101,3 +74,4 @@ int fclose(FILE *iop){
 	iop->_bufsiz = 0;
 	return(rtn);
 }*/
+
