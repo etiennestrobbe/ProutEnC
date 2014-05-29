@@ -39,30 +39,37 @@ int _filbuf(FILE *f){
 
 int _flsbuf(unsigned char c, FILE *f){
 
+	/* si le buffer n'est pas en mode bufferisation alors taille = 1 */
 	int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
 
-	// Si le buffer n'existe pas
-	if(f->_bufsiz <=1){
-		f->_base = malloc(size);
-		f->_ptr = f->_base;
-		f->_cnt = size;
+	/* Si le buffer n'existe pas alors on le creer et l'alloue */
+	if(f->_base == NULL){
+		puts("buffer n'existe pas");
+		if((f->_base = malloc(size)) == NULL){
+			puts("ca merde");
+			return EOF;
+		}
+		else{
+			f->_ptr = f->_base;
+			f->_cnt = size;
+		}
 	}
 
-	// Si le buffer est plein
+	/* Si le buffer est plein alors j'écris dans fichier */
 	if(f->_ptr == f->_base + size){
 		puts("BUFFER PLEIN J'ECRIS DANS FICHIER");
-		int r = write(f->_file, (char *) f->_base, size);
-		if(r){
-			puts("R !");
+		int written = write(f->_file, (char *) f->_base, size);
+		if(written){
+			puts("write ok !");
 		}
 		else
 		{
-			puts("PAS R !");
+			puts("write pas ok !");
 		}
 		f->_ptr = f->_base;
 		f->_cnt = size;
 	}
-	puts("J'ECRIS DANS BUFFER BITE");
+	//puts("J'ECRIS DANS BUFFER BITE");
 	*(f->_ptr)++ = c;
 	f->_cnt--;
 
@@ -70,3 +77,27 @@ int _flsbuf(unsigned char c, FILE *f){
 
 	return c;
 }
+
+/*
+int fclose(FILE *iop){
+	int rtn=EOF;
+
+	/* si le FILE est null, il n'a jamais été ouvert *
+	if(iop == NULL)return(rtn);
+	
+	if(iop->_flag & (_IOREAD | _IOWRT | _IORW)
+	   && (iop->_flag & _IOSTRG) == 0) {
+		rtn = (iop->_flag & _IONBF)? 0: fflush(iop);
+		if(close(fileno(iop)) < 0)
+			rtn = EOF;
+	}
+	if(iop->_flag & _IOMYBUF) {
+		free((char*)iop->_base);
+		iop->_base = NULL;
+	}
+	iop->_flag = 0;
+	iop->_cnt = 0;
+	iop->_ptr = iop->_base;
+	iop->_bufsiz = 0;
+	return(rtn);
+}*/
