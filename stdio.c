@@ -55,19 +55,7 @@ int _flsbuf(unsigned char c, FILE *f){
 int fclose(FILE *f){
 	int rtn=EOF;
 
-	/* si le FILE est null, il n'a jamais été ouvert *
 	if(f == NULL)return(rtn);
-	
-	/*if(f->_flag & (_IOREAD | _IOWRT | _IORW)
-	   && (f->_flag & _IOSTRG) == 0) {
-		rtn = (f->_flag & _IONBF)? 0: fflush(f);
-		if(close(fileno(f)) < 0)
-			rtn = EOF;
-	}
-	if(f->_flag & _IOMYBUF) {
-		free((char*)f->_base);
-		f->_base = NULL;
-	}*/
 
 	// On est en ecriture
 	if(f->_flag & (_IOWRT | _IORW) == 0){
