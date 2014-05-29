@@ -81,27 +81,24 @@ int _flsbuf(unsigned char c, FILE *f){
 	return c;
 }
 
-/*
-int fclose(FILE *iop){
+
+int fclose(FILE *f){
 	int rtn=EOF;
 
-	/* si le FILE est null, il n'a jamais été ouvert *
-	if(iop == NULL)return(rtn);
-	
-	if(iop->_flag & (_IOREAD | _IOWRT | _IORW)
-	   && (iop->_flag & _IOSTRG) == 0) {
-		rtn = (iop->_flag & _IONBF)? 0: fflush(iop);
-		if(close(fileno(iop)) < 0)
-			rtn = EOF;
+	if(f == NULL)return(rtn);
+
+	// On est en ecriture
+	if(f->_flag & (_IOWRT | _IORW) == 0){
+		_flsbuf(EOF, f);
 	}
-	if(iop->_flag & _IOMYBUF) {
-		free((char*)iop->_base);
-		iop->_base = NULL;
-	}
+
+	free((char*)f->_base);
+	f->_base = NULL;
+
 	iop->_flag = 0;
 	iop->_cnt = 0;
 	iop->_ptr = iop->_base;
 	iop->_bufsiz = 0;
 	return(rtn);
-}*/
+}
 
