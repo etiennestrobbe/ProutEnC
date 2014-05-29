@@ -7,7 +7,6 @@ int _filbuf(FILE *f){
 
 	// Verifier f lecture
 	if(!f->_flag & _IOREAD){
-		puts("file not in read mode");
 		return EOF;
 	}
 	else{
@@ -48,7 +47,38 @@ int _filbuf(FILE *f){
 }
 
 int _flsbuf(unsigned char c, FILE *f){
-	return 0;
+
+	int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
+
+	// Si le buffer n'existe pas
+	if(f->_base == NULL){
+		f->_base = malloc(size);
+		f->_ptr = f->_base;
+		f->_cnt = size;
+	}
+
+	// Si le buffer est plein
+	if(f->_ptr == f->_base + size){
+		puts("BUFFER PLEIN J'ECRIS DANS FICHIER");
+		int r = write(f->_file, (char *) f->_base, size);
+		free(f->_base);
+		if(r){
+			puts("R !");
+		}
+		else
+		{
+			puts("PAS R !");
+		}
+		f->_ptr = f->_base;
+		f->_cnt = size;
+	}
+	puts("J'ECRIS DANS BUFFER BITE");
+	*(f->_ptr)++ = c;
+	f->_cnt--;
+
+	// D'autres cas ?
+
+	return c;
 }
 
 /*
