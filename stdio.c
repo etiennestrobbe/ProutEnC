@@ -62,21 +62,17 @@ int _flsbuf(unsigned char c, FILE *f){
 
 	// Si le buffer est plein
 	if(f->_ptr == f->_base + size | ((f->_flag & _IOLBF|_IOWRT) && c=='\n')){
-		puts("BUFFER PLEIN J'ECRIS DANS FICHIER");
 		int r = write(f->_file, (char *) f->_base, size);
 		free(f->_base);
 		if(r){
-			puts("R !");
 		}
 		else
 		{
-			puts("PAS R !");
 			return EOF;
 		}
 		f->_ptr = f->_base;
 		f->_cnt = 0;
 	}
-	puts("J'ECRIS DANS BUFFER BITE");
 	*(f->_ptr)++ = c;
 
 	// D'autres cas ?
