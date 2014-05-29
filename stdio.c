@@ -48,12 +48,22 @@ int _filbuf(FILE *f){
 
 int _flsbuf(unsigned char c, FILE *f){
 
+	// on recupere la taille du buffer
 	int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
 	
+	// si le buffer est en mode NBF alors on ecrit direct sur le fichier (pas de bufferisation)
+	if(size==1){
+		write(f->_file,&c,1);
+	}
+	
 
-	// Si le buffer n'existe pas
+	// Si le buffer n'existe pas, on le creer (allocation)
 	if(f->_base == NULL){
-		f->_base = malloc(size);
+		if ((f->_base = (char *) malloc(size)) == NULL){
+			f->_flag |= _IOERR;
+			return EOF;
+		}
+		// init des attribut du FILE
 		f->_bufsiz = size;
 		f->_ptr = f->_base;
 		f->_flag |= _IOMYBUF;
@@ -61,26 +71,28 @@ int _flsbuf(unsigned char c, FILE *f){
 	
 
 	// Si le buffer est plein
-	if(f->_ptr == f->_base + size | ((f->_flag & _IOLBF|_IOWRT) && c=='\n' && -(f)->_cnt < (f)->_bufsiz)){
-		int r = write(f->_file, (char *) f->_base, size);
-		if(!r){
+	if(f->_ptr == f->_base + size){
+		// si l'ecriture du buffer dans le fichier f marche pas
+		if(!write(f->_file, (char *) f->_base, size)){
+			f->_flag |= _IOERR;
 			return EOF;
 		}
-		free(f->_base);
-		if ((f->_base = (char *) malloc(size)) == NULL){
-			   return EOF;
-		}
-		else{
-			f->_cnt = BUFSIZ;
-			f->_flag |= _IOMYBUF;
-			f->_ptr = f->_base;
-			*(f->_ptr)++ = c;
+		f->_ptr = f->_base;
+		*(f->_ptr)++ = c;
+		f->_cnt = 0;
+	}
+	else if(f->_flag & _IOLBF && c == '\n'){
+		if(!write(f->_file, (char *) f->_base, -f->_cnt)){
+			f->_flag |= _IOERR;
+			return EOF;
 		}
 		f->_ptr = f->_base;
 		f->_cnt = 0;
 	}
+	else{
+		*(f->_ptr)++ = c;
+	}
 
-	// D'autres cas ?
 
 	return c;
 }
