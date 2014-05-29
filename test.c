@@ -19,20 +19,20 @@ int main(){
 		{0, NULL, NULL, 0,_IOWRT|_IOLBF, 1 },
 		{0, NULL, NULL, 0,_IOWRT | _IONBF, 2 } 
 	};	
-	/*
+	
 	tracer(stdout);
 	putc('X', stdout);
 	tracer(stdout);
 	putc('Y', stdout);
 	tracer(stdout);
 	putc('\n', stdout);
-	tracer(stdout);*/
+	tracer(stdout);/*
 	int c;
 	puts ("Enter text. Include a dot ('.') in a sentence to exit:");
 	do {
 		c=getchar();
 		putchar (c);
-	} while (c != '.');
+	} while (c != '.');*/
 	return 0;
 }
 

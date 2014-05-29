@@ -61,19 +61,24 @@ int _flsbuf(unsigned char c, FILE *f){
 	
 
 	// Si le buffer est plein
-	if(f->_ptr == f->_base + size | ((f->_flag & _IOLBF|_IOWRT) && c=='\n')){
+	if(f->_ptr == f->_base + size | ((f->_flag & _IOLBF|_IOWRT) && c=='\n' && -(f)->_cnt < (f)->_bufsiz)){
 		int r = write(f->_file, (char *) f->_base, size);
-		free(f->_base);
-		if(r){
-		}
-		else
-		{
+		if(!r){
 			return EOF;
+		}
+		free(f->_base);
+		if ((f->_base = (char *) malloc(size)) == NULL){
+			   return EOF;
+		}
+		else{
+			f->_cnt = BUFSIZ;
+			f->_flag |= _IOMYBUF;
+			f->_ptr = f->_base;
+			*(f->_ptr)++ = c;
 		}
 		f->_ptr = f->_base;
 		f->_cnt = 0;
 	}
-	*(f->_ptr)++ = c;
 
 	// D'autres cas ?
 
