@@ -49,12 +49,14 @@ int _filbuf(FILE *f){
 int _flsbuf(unsigned char c, FILE *f){
 
 	int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
+	
 
 	// Si le buffer n'existe pas
 	if(f->_base == NULL){
 		f->_base = malloc(size);
+		f->_bufsiz = size;
 		f->_ptr = f->_base;
-		f->_cnt = size;
+		f->_flag |= _IOMYBUF;
 	}
 
 	// Si le buffer est plein
@@ -68,9 +70,10 @@ int _flsbuf(unsigned char c, FILE *f){
 		else
 		{
 			puts("PAS R !");
+			return EOF;
 		}
 		f->_ptr = f->_base;
-		f->_cnt = size;
+		f->_cnt = r;
 	}
 	puts("J'ECRIS DANS BUFFER BITE");
 	*(f->_ptr)++ = c;
