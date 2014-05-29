@@ -58,9 +58,10 @@ int _flsbuf(unsigned char c, FILE *f){
 		f->_ptr = f->_base;
 		f->_flag |= _IOMYBUF;
 	}
+	
 
 	// Si le buffer est plein
-	if(f->_ptr == f->_base + size){
+	if(f->_ptr == f->_base + size | ((f->_flag & _IOLBF|_IOWRT) && c=='\n')){
 		puts("BUFFER PLEIN J'ECRIS DANS FICHIER");
 		int r = write(f->_file, (char *) f->_base, size);
 		free(f->_base);
@@ -73,11 +74,10 @@ int _flsbuf(unsigned char c, FILE *f){
 			return EOF;
 		}
 		f->_ptr = f->_base;
-		f->_cnt = r;
+		f->_cnt = 0;
 	}
 	puts("J'ECRIS DANS BUFFER BITE");
 	*(f->_ptr)++ = c;
-	f->_cnt--;
 
 	// D'autres cas ?
 
