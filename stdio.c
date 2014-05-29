@@ -88,17 +88,17 @@ int fclose(FILE *f){
 	if(f == NULL)return(rtn);
 
 	// On est en ecriture
-	if(f->_flag & (_IOWRT | _IORW) == 0){
+	if(f->_flag & (_IOWRT | _IORW) == 0){
 		_flsbuf(EOF, f);
 	}
 
 	free((char*)f->_base);
 	f->_base = NULL;
 
-	iop->_flag = 0;
-	iop->_cnt = 0;
-	iop->_ptr = iop->_base;
-	iop->_bufsiz = 0;
+	f->_flag = 0;
+	f->_cnt = 0;
+	f->_ptr = f->_base;
+	f->_bufsiz = 0;
 	return(rtn);
 }
 
