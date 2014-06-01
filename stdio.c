@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include <unistd.h>
+#include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -22,7 +23,7 @@ int _filbuf(FILE *f){
 		if (f->_base == NULL){
 			f->_bufsiz = size;
 		   // Si on ne peut plus allouer
-		   if ((f->_base = (char *) malloc(size)) == NULL){
+		   if ((f->_base = (unsigned char *) malloc(size)) == NULL){
 			   return EOF;
 		   }
 		   else{
@@ -50,92 +51,42 @@ int _filbuf(FILE *f){
 		return (unsigned char) *f->_ptr++;
 	}
 }
-/*
+
 int _flsbuf(unsigned char c, FILE *f){
 
-	// on recupere la taille du buffer
-	int size = (f->_flag & _IONBF) ? 1 : BUFSIZ;
-	
-	// si le buffer est en mode NBF alors on ecrit direct sur le fichier (pas de bufferisation)
-	if(size==1){
-		write(f->_file,&c,1);
-	}
-	
+	// Le fichier est ouvert
+	if(f->_file && (f->_flag & _IOLBF | _IOWRT |  _IOREAD | _IORW)){
 
-	// Si le buffer n'existe pas, on le creer (allocation)
-	if(f->_base == NULL){
-		if ((f->_base = (char *) malloc(size)) == NULL){
-			f->_flag |= _IOERR;
-			return EOF;
+		// Allocation
+		if(f->_base == NULL){
+			if ((f->_base = (unsigned char *) malloc(BUFSIZ)) == NULL){
+				f->_flag = _IOERR;
+				return EOF;
+			}
+			f->_bufsiz = BUFSIZ;
+			f->_flag = _IOMYBUF;
+			f->_ptr = f->_base;
+			f->_cnt = 0;
 		}
-		// init des attribut du FILE
-		f->_bufsiz = size;
-		f->_ptr = f->_base;
-		f->_flag |= _IOMYBUF;
-	}
-	
-
-	// Si le buffer est plein
-	if(f->_ptr == f->_base + size){
-		// si l'ecriture du buffer dans le fichier f marche pas
-		if(!write(f->_file, (char *) f->_base, size)){
-			f->_flag |= _IOERR;
-			return EOF;
+		// Dernier caractere : retour à la ligne
+		if(c == '\n'){
+			write(f->_file, (unsigned char *) f->_base, - f->_cnt);
+			f->_ptr = f->_base;
+			f->_cnt = 0;
 		}
-		f->_ptr = f->_base;
-		*(f->_ptr)++ = c;
-		f->_cnt = 0;
-	}
-	else if(f->_flag & _IOLBF && c == '\n'){
-		if(!write(f->_file, (char *) f->_base, -f->_cnt)){
-			f->_flag |= _IOERR;
-			return EOF;
-		}
-		f->_ptr = f->_base;
-		f->_cnt = 0;
+		else{
+			*(f->_ptr) = c;
+			(f->_ptr)++;
+		 }
+		return c;
 	}
 	else{
-		*(f->_ptr)++ = c;
+		return EOF;
 	}
-
-
-	return c;
-}
-* */
-int _flsbuf(unsigned char c, FILE *f){
-
- // Le fichier est ouvert
- if(f->_file && (f->_flag & _IOLBF | _IOWRT |  _IOREAD | _IORW)){
-
-  // Allocation
-  if(f->_base == NULL){
-   if ((f->_base = (char *) malloc(BUFSIZ)) == NULL){
-    f->_flag = _IOERR;
-    return EOF;
-   }
-   f->_bufsiz = BUFSIZ;
-   f->_flag = _IOMYBUF;
-   f->_ptr = f->_base;
-   f->_cnt = 0;
-  }
-  // Dernier caractere : retour à la ligne
-  if(c == '\n'){
-   write(f->_file, (char *) f->_base, - f->_cnt);
-   f->_ptr = f->_base;
-   f->_cnt = 0;
-  }
-  else{
-   *(f->_ptr) = c;
-   *(f->_ptr)++;
-   }
-  return c;
- }
- else{
-  return EOF;
- }
-
+	
 return c;
 }
+
 
 int fflush(FILE *stream){
 	int rc = 0;
@@ -237,7 +188,7 @@ FILE *fopen(const char *path, const char *mode){
 		f->_flag = 0;			/* release */
 		return (NULL);
 	}
-	if ((f->_base = (char *) malloc(BUFSIZ)) == NULL){
+	if ((f->_base = (unsigned char *) malloc(BUFSIZ)) == NULL){
 			   return NULL;
 	}
 	f->_ptr = f->_base;
@@ -259,7 +210,7 @@ int setvbuf(FILE *stream, char *buf, int mode, int size){
 		return EOF;
 	}
 	if(buf == NULL){
-		if(stream->_base= (char *) malloc(size) == NULL){
+		if((stream->_base= (unsigned char *) malloc(size)) == NULL){
 			return EOF;
 		}
 	}
