@@ -50,7 +50,7 @@ int _filbuf(FILE *f){
 		return (unsigned char) *f->_ptr++;
 	}
 }
-
+/*
 int _flsbuf(unsigned char c, FILE *f){
 
 	// on recupere la taille du buffer
@@ -101,9 +101,67 @@ int _flsbuf(unsigned char c, FILE *f){
 
 	return c;
 }
+* */
+int _flsbuf(unsigned char c, FILE *f){
+
+ // Le fichier est ouvert
+ if(f->_file && (f->_flag & _IOLBF | _IOWRT |  _IOREAD | _IORW)){
+
+  // Allocation
+  if(f->_base == NULL){
+   if ((f->_base = (char *) malloc(BUFSIZ)) == NULL){
+    f->_flag = _IOERR;
+    return EOF;
+   }
+   f->_bufsiz = BUFSIZ;
+   f->_flag = _IOMYBUF;
+   f->_ptr = f->_base;
+   f->_cnt = 0;
+  }
+  // Dernier caractere : retour à la ligne
+  if(c == '\n'){
+   write(f->_file, (char *) f->_base, - f->_cnt);
+   f->_ptr = f->_base;
+   f->_cnt = 0;
+  }
+  else{
+   *(f->_ptr) = c;
+   *(f->_ptr)++;
+   }
+  return c;
+ }
+ else{
+  return EOF;
+ }
+
+return c;
+}
 
 int fflush(FILE *stream){
-	return _flsbuf('\n',stream);	
+	int rc = 0;
+  int count;
+  int written;
+
+  if (!stream) stream = 1;
+  if ((stream->_flag & (_IOREAD | _IOWRT)) == _IOWRT && 
+      ((stream)->_flag & (_IONBF | _IOMYBUF)) && 
+      (count = stream->_ptr - stream->_base) > 0) {
+    
+      written = write(fileno(stream), stream->_base, count);
+
+    if (written == count)  {
+      // If this is a read/write file, clear _IOWR so that next operation can be a read
+      if (stream->_flag & _IORW) stream->_flag &= ~_IOWRT;
+    } else {
+      stream->_flag |= _IOERR;
+      rc = EOF;
+    }
+  }
+
+  stream->_ptr = stream->_base;
+  stream->_cnt = 0;
+
+  return rc;
 }
 
 
