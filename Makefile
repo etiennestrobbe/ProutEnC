@@ -1,9 +1,9 @@
 CC=gcc
 
-all: test
+all: cpSimple
 
-test : stdio.o test.c
-	$(CC) -o test stdio.o test.c
+cpSimple : stdio.o test.c
+	$(CC) -o cpSimple stdio.o test.c
 
 stdio.o: stdio.c stdio.h
 	$(CC) -c stdio.c
