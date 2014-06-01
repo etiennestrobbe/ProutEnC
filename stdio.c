@@ -55,8 +55,6 @@ int _flsbuf(unsigned char c, FILE *f){
 
 	// Le fichier est ouvert
 	if(f->_file && (f->_flag & _IOLBF | _IOWRT |  _IOREAD | _IORW)){
-		//puts("KIKOU");
-
 
 		// Allocation
 		if(f->_base == NULL){
@@ -68,18 +66,19 @@ int _flsbuf(unsigned char c, FILE *f){
 			f->_bufsiz = BUFSIZ;
 			f->_flag = _IOMYBUF;
 			f->_ptr = f->_base;
+			f->_cnt = 0;
 		}
 		// Dernier caractere : retour à la ligne
 		if(c == '\n'){
-			puts("Write : ");
-			write(f->_file, (char *) f->_base, f->_ptr - f->_base);
+			puts("\nWrite : ");
+			write(f->_file, (char *) f->_base, - f->_cnt);
 			f->_ptr = f->_base;
-			f->_cnt = 1;
+			f->_cnt = 0;
 		}
 		else{
-			puts("ELSE\n");
-			*(f->_ptr)++ = c;
-			f->_cnt++;
+			puts("\nELSE");
+			*(f->_ptr) = c;
+			*(f->_ptr)++;
 		 }
 		return c;
 	}
