@@ -9,7 +9,7 @@ int main(int argc,char **argv){
 		{0, NULL, NULL, 0,_IOREAD, 0 },
 		{0, NULL, NULL, 0,_IOWRT|_IOLBF, 1 },
 		{0, NULL, NULL, 0,_IOWRT | _IONBF, 2 } 
-	};	
+	};
 	if(argc <= 2) {
 		return 0;
 	}
@@ -23,11 +23,9 @@ int main(int argc,char **argv){
 
 	char c;
 	while((c = getc(lecture)) != EOF) {
-		putc(c,stdout);
 		putc(c,ecriture);
 	}
 
-	fflush(ecriture);
 	fclose(lecture);
 	fclose(ecriture);
 }
